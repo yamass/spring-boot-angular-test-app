@@ -4,6 +4,17 @@ angular.module('todoApp', ['ngRoute'])
 
     .controller('TodoController', ['$scope', '$http', 'todosUrl', function ($scope, $http, todosUrl) {
 
+        var socket = new SockJS('/hello');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/todos', function(frame){
+                var todoFromServer = JSON.parse(frame.body);
+                $scope.todos[todoFromServer.id] = todoFromServer;
+                $scope.$apply();
+            });
+        });
+
         function initTodos(todosFromServer) {
             $scope.todos = {};
             for (var i = 0; i < todosFromServer.length; i++) {

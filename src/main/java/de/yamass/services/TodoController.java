@@ -1,5 +1,14 @@
 package de.yamass.services;
 
+import de.yamass.model.Todo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -8,19 +17,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.yamass.model.Todo;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
-@RequestMapping (value = "data/todos")
-public class GreetingController {
+@RequestMapping(value = "data/todos")
+public class TodoController {
 
     private final Map<Integer, Todo> todos = Collections.synchronizedMap(new LinkedHashMap<>());
     private static AtomicInteger idCounter = new AtomicInteger(1);
+
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    public TodoController(SimpMessagingTemplate template) {
+        this.template = template;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Todo> getTodos() {
@@ -44,6 +53,7 @@ public class GreetingController {
             persistedTodo.setDone(todo.isDone());
             persistedTodo.setText(todo.getText());
         }
+        this.template.convertAndSend("/topic/todos", persistedTodo);
         return persistedTodo;
     }
 
