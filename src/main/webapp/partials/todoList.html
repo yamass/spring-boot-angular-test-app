@@ -1,0 +1,17 @@
+<div>
+    <span>{{remaining()}} of {{todos.length}} remaining</span>
+    <a href="#" ng-click="deleteDoneTodos()">delete done</a>
+    <ul class="unstyled">
+        <li ng-repeat="(id, todo) in todos | orderObjectBy:'id'">
+            <input type="checkbox" ng-model="todo.done" ng-click="updateTodo(todo)">
+            <span class="done-{{todo.done}}">{{todo.text}}</span>
+            <span class="grey-text">[{{todo.id}}]</span>
+            <a href="" ng-click="deleteTodo(todo)">delete</a>
+            <a href="#/todos/{{todo.id}}" >edit</a>
+        </li>
+    </ul>
+    <form ng-submit="addTodo()">
+        <input type="text" ng-model="todoText"  size="30" placeholder="add new todo here">
+        <input class="btn-primary" type="submit" value="add">
+    </form>
+</div>
