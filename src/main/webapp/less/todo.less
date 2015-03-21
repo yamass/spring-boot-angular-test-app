@@ -1,0 +1,63 @@
+.arrow-top {
+  position: relative;
+  margin-top: @popover-arrow-outer-width;
+  &:before {
+    position: absolute;
+    content: ' ';
+    border: @popover-arrow-outer-width solid transparent;
+    border-top-width: 0;
+    border-bottom: @popover-arrow-outer-width solid @alert-danger-border;
+    top: -@popover-arrow-outer-width;
+    left: 9px;
+  }
+  &:after {
+    position: absolute;
+    content: ' ';
+    border: @popover-arrow-width solid transparent;
+    border-top-width: 0;
+    border-bottom: @popover-arrow-width solid @alert-danger-bg;
+    top: -@popover-arrow-width;
+    left: 10px;
+  }
+}
+
+
+.done-true {
+    text-decoration: line-through;
+    color: grey;
+}
+
+.grey-text {
+    color: lightgrey;
+}
+
+//input.ng-invalid {
+//}
+/*.ng-scope {*/
+    /*border: 2px dashed grey;*/
+/*}*/
+/*.ng-isolate-scope {*/
+    /*border: 2px dashed lightblue;*/
+/*}*/
+/*.ng-binding {*/
+    /*border: 1px solid darkgreen;*/
+/*}*/
+/*.ng-invalid {*/
+    /*border: 1px solid red;*/
+    /*background-color: #ffeeee;*/
+/*}*/
+/*.ng-valid {*/
+    /*background-color: #eeffee;*/
+/*}*/
+/*.ng-pristine{*/
+
+/*}*/
+/*.ng-dirty {*/
+    /*text-blink: 100;*/
+/*}*/
+/*.ng-touched {*/
+
+/*}*/
+/*.ng-untouched {*/
+
+/*}*/

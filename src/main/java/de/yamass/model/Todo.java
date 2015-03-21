@@ -1,9 +1,16 @@
 package de.yamass.model;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class Todo {
 
     private int id;
+
+    @NotEmpty
+    @Length(max = 10)
     private String text;
+
     private boolean done;
 
     public Todo() {

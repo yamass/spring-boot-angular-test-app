@@ -1,0 +1,24 @@
+{
+  "name": "angularjs-livecoding",
+  "version": "1.0.0",
+  "authors": [
+    "Yann Massard <yamass@gmail.com>"
+  ],
+  "main": "index.html",
+  "license": "Apache 2.0",
+  "private": false,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "latest",
+    "bootstrap": "latest",
+    "less": "latest"
+  },
+  "devDependencies": {
+
+  }
+}

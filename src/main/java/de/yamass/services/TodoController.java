@@ -1,14 +1,17 @@
 package de.yamass.services;
 
 import de.yamass.model.Todo;
+import de.yamass.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,7 +40,17 @@ public class TodoController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Todo addTodo(@RequestBody Todo todo) {
+    public Todo addTodo(@RequestBody @Valid Todo todo, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors())  {
+            throw new ValidationException("blah", bindingResult);
+        }
+        for (Todo existingTodo : todos.values()) {
+            if (existingTodo.getText().equals(todo.getText())) {
+                throw new ValidationException("This TODO already exist!", bindingResult);
+            }
+        }
+
         int id = idCounter.getAndIncrement();
         todo.setId(id);
         todos.put(id, todo);
@@ -48,7 +61,7 @@ public class TodoController {
     public Todo updateTodo(@RequestBody Todo todo) {
         Todo persistedTodo = todos.get(todo.getId());
         if (persistedTodo == null) {
-            // TODO throw error
+            throw new IllegalArgumentException("Todo not found:  " + todo.getId());
         } else {
             persistedTodo.setDone(todo.isDone());
             persistedTodo.setText(todo.getText());

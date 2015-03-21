@@ -1,17 +1,40 @@
-<div>
-    <span>{{remaining()}} of {{todos.length}} remaining</span>
-    <a href="#" ng-click="deleteDoneTodos()">delete done</a>
-    <ul class="unstyled">
-        <li ng-repeat="(id, todo) in todos | orderObjectBy:'id'">
-            <input type="checkbox" ng-model="todo.done" ng-click="updateTodo(todo)">
-            <span class="done-{{todo.done}}">{{todo.text}}</span>
-            <span class="grey-text">[{{todo.id}}]</span>
-            <a href="" ng-click="deleteTodo(todo)">delete</a>
-            <a href="#/todos/{{todo.id}}" >edit</a>
-        </li>
-    </ul>
-    <form ng-submit="addTodo()">
-        <input type="text" ng-model="todoText"  size="30" placeholder="add new todo here">
-        <input class="btn-primary" type="submit" value="add">
-    </form>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <span>{{remaining()}} of {{todos.length}} remaining</span>
+        <a href="" ng-click="deleteDoneTodos()">delete done</a>
+        <ul class="unstyled">
+            <li ng-repeat="(id, todo) in todos | orderObjectBy:'id'">
+                <input type="checkbox" ng-model="todo.done" ng-click="updateTodo(todo)">
+                <span class="done-{{todo.done}}">{{todo.text}}</span>
+                <span class="grey-text">[{{todo.id}}]</span>
+                <a href="" ng-click="deleteTodo(todo)">delete</a>
+                <a href="#/todos/{{todo.id}}">edit</a>
+            </li>
+        </ul>
+        <form name="addTodoForm" ng-submit="addTodo()">
+            <div class="form-group has-feedback" ng-class="{'has-error': addTodoForm.text.$invalid}">
+                <label class="control-label" for="textInput">Text</label>
+                <input type="text" name="text" ng-model="todoText" placeholder="add new todo here" class="form-control" id="textInput" server-error>
+                <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-class="{'hidden': !addTodoForm.text.$invalid}"></span>
+
+                <div class="alert alert-danger arrow-top"
+                     ng-if="addTodoForm.text.$invalid">
+                    <div ng-repeat="fieldError in getServerValidationErrorsForField('text')">
+                        <div>
+                            <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                            {{fieldError.message}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input class="btn-primary" type="submit" value="add">
+        </form>
+
+
+        <h3>Portlet:</h3>
+        <div ng-include="'../portlets/myPortlet1.html'"></div>
+
+
+    </div>
 </div>
