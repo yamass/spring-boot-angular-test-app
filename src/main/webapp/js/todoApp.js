@@ -16,6 +16,8 @@ angular.module('todoApp', ['ngRoute'])
             });
         });
 
+        $scope.todos = {};
+
         function initTodos(todosFromServer) {
             $scope.todos = {};
             for (var i = 0; i < todosFromServer.length; i++) {
@@ -133,11 +135,11 @@ angular.module('todoApp', ['ngRoute'])
         function ($routeProvider) {
             $routeProvider.
                 when('/todos', {
-                    templateUrl: 'partials/todoList.html',
+                    templateUrl: '../partials/todoList.html',
                     controller: 'TodoController'
                 }).
                 when('/todos/:todoId', {
-                    templateUrl: 'partials/editTodo.html',
+                    templateUrl: '../partials/editTodo.html',
                     controller: 'EditTodoController'
                 }).
                 otherwise({

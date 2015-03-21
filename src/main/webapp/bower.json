@@ -14,9 +14,13 @@
     "tests"
   ],
   "dependencies": {
+    "angular":"1.x",
+    "angular-route":"1.x",
     "jquery": "latest",
     "bootstrap": "latest",
-    "less": "latest"
+    "less": "latest",
+    "sockjs": "latest",
+    "stomp-websocket": "latest"
   },
   "devDependencies": {
 
