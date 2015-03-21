@@ -32,6 +32,7 @@ angular.module('todoApp', ['ngRoute'])
             var newTodo = {text: $scope.todoText, done: false};
 
             $http.post(todosUrl, newTodo).success(function (persistedTodo) {
+                $scope.serverValidationErrors = null;
                 $scope.todos[persistedTodo.id] = persistedTodo;
                 $scope.todoText = '';
             }).error(function (validationErrors, httpCode) {
