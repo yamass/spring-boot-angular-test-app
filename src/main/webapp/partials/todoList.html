@@ -1,7 +1,9 @@
 <div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Todo List</h3>
+    </div>
     <div class="panel-body">
-        <span>{{remaining()}} of {{todos.length}} remaining</span>
-        <a href="" ng-click="deleteDoneTodos()">delete done</a>
+        <span><span class="badge">{{numberOfRemainingTodos()}}</span> of {{numberOfTodos()}} remaining</span>
         <ul class="unstyled">
             <li ng-repeat="(id, todo) in todos | orderObjectBy:'id'">
                 <input type="checkbox" ng-model="todo.done" ng-click="updateTodo(todo)">
@@ -11,30 +13,65 @@
                 <a href="#/todos/{{todo.id}}">edit</a>
             </li>
         </ul>
-        <form name="addTodoForm" ng-submit="addTodo()">
-            <div class="form-group has-feedback" ng-class="{'has-error': addTodoForm.text.$invalid}">
-                <label class="control-label" for="textInput">Text</label>
-                <input type="text" name="text" ng-model="todoText" placeholder="add new todo here" class="form-control" id="textInput" server-error>
-                <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-class="{'hidden': !addTodoForm.text.$invalid}"></span>
-
-                <div class="alert alert-danger arrow-top"
-                     ng-if="addTodoForm.text.$invalid">
-                    <div ng-repeat="fieldError in getServerValidationErrorsForField('text')">
-                        <div>
-                            <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
-                            {{fieldError.message}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <input class="btn-primary" type="submit" value="add">
-        </form>
-
+        <a href="" ng-click="deleteDoneTodos()">delete done</a>
 
         <h3>Portlet:</h3>
         <div ng-include="'../portlets/myPortlet1.html'"></div>
 
 
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Add Todo</h3>
+    </div>
+    <div class="panel-body">
+        <form name="addTodoForm" ng-submit="addTodo()" class="form-horizontal">
+            <div class="alert alert-danger" ng-if="addTodoForm.$invalid || serverValidationErrors.compositeValidationErrors.length > 0">
+                <div>Bitte prüfen Sie Ihre Eingabe.</div>
+                <div ng-repeat="validationError in serverValidationErrors.compositeValidationErrors">
+                    <div>
+                        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                        {{validationError.message}}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group has-feedback" ng-class="{'has-error': addTodoForm.text.$invalid}">
+                <label class="col-sm-2 control-label" for="textInput">Text</label>
+                <div class="col-sm-6">
+                    <input type="text" name="text" ng-model="todoText" placeholder="add new todo here" class="form-control" id="textInput" server-error>
+                    <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" ng-class="{'hidden': !addTodoForm.text.$invalid}"></span>
+                </div>
+                <div class="col-sm-4">
+                    <div class="alert alert-danger arrow-left hidden-xs"
+                         ng-if="addTodoForm.text.$invalid">
+                        <div ng-repeat="fieldError in getServerValidationErrorsForField('text')">
+                            <div>
+                                <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                                {{fieldError.message}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-danger arrow-top hidden visible-xs" ng-if="addTodoForm.text.$invalid">
+                <div ng-repeat="fieldError in getServerValidationErrorsForField('text')">
+                    <div>
+                        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                        {{fieldError.message}}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input class="btn btn-primary" type="submit" value="add">
+                </div>
+            </div>
+        </form>
     </div>
 </div>

@@ -53,7 +53,11 @@ angular.module('todoApp', ['ngRoute'])
             return fieldErrors;
         };
 
-        $scope.remaining = function () {
+        $scope.numberOfTodos = function () {
+            return Object.keys($scope.todos).length;
+        };
+
+        $scope.numberOfRemainingTodos = function () {
             var count = 0;
             angular.forEach($scope.todos, function (todo, id) {
                 count += todo.done ? 0 : 1;

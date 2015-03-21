@@ -41,14 +41,13 @@ public class TodoController {
 
     @RequestMapping(method = RequestMethod.POST)
     public Todo addTodo(@RequestBody @Valid Todo todo, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors())  {
-            throw new ValidationException("blah", bindingResult);
-        }
         for (Todo existingTodo : todos.values()) {
             if (existingTodo.getText().equals(todo.getText())) {
-                throw new ValidationException("This TODO already exist!", bindingResult);
+                bindingResult.reject("alreadyExists", "Ein Todo mit dem gleichen Namen existiert bereits!");
             }
+        }
+        if (bindingResult.hasErrors())  {
+            throw new ValidationException(bindingResult);
         }
 
         int id = idCounter.getAndIncrement();

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -17,12 +18,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ ValidationException.class })
-    protected ResponseEntity<Object> handleInvalidRequest(RuntimeException e, WebRequest request) {
-        ValidationException ire = (ValidationException) e;
-        List<FieldValidationError> fieldValidationErrors = new ArrayList<>();
+    protected ResponseEntity<Object> handleInvalidRequest(ValidationException e, WebRequest request) {
 
-        List<FieldError> fieldErrors = ire.getErrors().getFieldErrors();
-        for (FieldError fieldError : fieldErrors) {
+        List<FieldValidationError> fieldValidationErrors = new ArrayList<>();
+        for (FieldError fieldError : e.getErrors().getFieldErrors()) {
             FieldValidationError fieldValidationError = new FieldValidationError();
             fieldValidationError.setObjectName(fieldError.getObjectName());
             fieldValidationError.setFieldName(fieldError.getField());
@@ -31,8 +30,17 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
             fieldValidationErrors.add(fieldValidationError);
         }
 
-        ValidationErrors error = new ValidationErrors();
-        error.setFieldErrors(fieldValidationErrors);
+        List<CompositeValidationError> compositeValidationErrors = new ArrayList<>();
+        for (ObjectError globalError : e.getErrors().getGlobalErrors()) {
+            CompositeValidationError compositeValidationError = new CompositeValidationError();
+            compositeValidationError.setObjectName(globalError.getObjectName());
+            compositeValidationError.setErrorCode(globalError.getCode());
+            compositeValidationError.setMessage(globalError.getDefaultMessage());
+            compositeValidationErrors.add(compositeValidationError);
+        }
+
+
+        ValidationErrors error = new ValidationErrors(fieldValidationErrors, compositeValidationErrors);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

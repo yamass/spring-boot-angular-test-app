@@ -6,8 +6,8 @@ import org.springframework.validation.Errors;
 public class ValidationException extends RuntimeException {
     private Errors errors;
 
-    public ValidationException(String message, Errors errors) {
-        super(message);
+    public ValidationException(Errors errors) {
+        super();
         this.errors = errors;
     }
 
