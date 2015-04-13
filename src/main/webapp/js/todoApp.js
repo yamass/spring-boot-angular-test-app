@@ -1,8 +1,6 @@
-angular.module('todoApp', ['ngRoute'])
+angular.module('todoApp', ['ngRoute', 'todoServices'])
 
-    .value('todosUrl', 'http://localhost:8080/data/todos')
-
-    .controller('TodoController', ['$scope', '$http', 'todosUrl', function ($scope, $http, todosUrl) {
+    .controller('TodoController', ['$scope', 'Todo', function ($scope, Todo) {
 
         var socket = new SockJS('/messaging');
 
@@ -10,13 +8,17 @@ angular.module('todoApp', ['ngRoute'])
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/todos', function (frame) {
-                var todoFromServer = JSON.parse(frame.body);
-                $scope.todos[todoFromServer.id] = todoFromServer;
-                $scope.$apply();
+                $scope.$apply(function () {
+                    var todoFromServer = JSON.parse(frame.body);
+                    $scope.todos[todoFromServer.id] = todoFromServer;
+                });
             });
         });
 
         $scope.todos = {};
+        Todo.query().$promise.then(function (todos) {
+            initTodos(todos);
+        });
 
         function initTodos(todosFromServer) {
             $scope.todos = {};
@@ -26,18 +28,14 @@ angular.module('todoApp', ['ngRoute'])
             }
         }
 
-        $http.get(todosUrl).success(function (todosFromServer) {
-            initTodos(todosFromServer);
-        });
-
         $scope.addTodo = function () {
             var newTodo = {text: $scope.todoText, done: false};
 
-            $http.post(todosUrl, newTodo).success(function (persistedTodo) {
-                $scope.serverValidationErrors = null;
+            Todo.save(newTodo, function (persistedTodo, responseHeaders) {
                 $scope.todos[persistedTodo.id] = persistedTodo;
                 $scope.todoText = '';
-            }).error(function (validationErrors, httpCode) {
+            }, function (httpResponse) {
+                var validationErrors = httpResponse.data;
                 $scope.serverValidationErrors = validationErrors;
                 $scope.addTodoForm.$setValidity('server', true);
                 angular.forEach(validationErrors.fieldErrors, function (fieldError) {
@@ -46,9 +44,9 @@ angular.module('todoApp', ['ngRoute'])
             });
         };
 
-        $scope.getServerValidationErrorsForField = function(fieldName) {
+        $scope.getServerValidationErrorsForField = function (fieldName) {
             var fieldErrors = [];
-            angular.forEach($scope.serverValidationErrors.fieldErrors, function(fieldError) {
+            angular.forEach($scope.serverValidationErrors.fieldErrors, function (fieldError) {
                 if (fieldError.fieldName === fieldName) {
                     fieldErrors.push(fieldError);
                 }
@@ -73,46 +71,36 @@ angular.module('todoApp', ['ngRoute'])
         };
 
         $scope.updateTodo = function (todo) {
-            $http.put(todosUrl, todo).success(function (persistedTodo) {
-                console.log("successfully updated todo " + todo.id);
+            Todo.update(todo, function (persistedTodo) {
                 $scope.todos[persistedTodo.id] = persistedTodo;
             });
         };
 
         $scope.deleteTodo = function (todo) {
-            $http.delete(todosUrl + "/" + todo.id).success(function () {
-                console.log("successfully delete todo " + todo.id);
+            Todo.delete({id: todo.id}, function () {
                 delete $scope.todos[todo.id];
-            }).error(function () {
-                console.log("ERROR while deleting todo " + todo.id);
             });
         };
 
         $scope.deleteDoneTodos = function () {
-            $http.post(todosUrl + "/deleteDone").success(function (todosFromServer) {
+            Todo.deleteDone(function(todosFromServer) {
                 initTodos(todosFromServer);
-            }).error(function () {
-                console.log("ERROR while deleting done todos!");
             });
         };
 
 
     }])
 
-    .controller('EditTodoController', ['$scope', '$http', 'todosUrl', '$routeParams', '$location', function ($scope, $http, todosUrl, $routeParams, $location) {
-        $http.get(todosUrl + "/" + $routeParams.todoId).success(function (todoFromServer) {
-            $scope.todo = todoFromServer;
-        });
+    .controller('EditTodoController', ['$scope', 'Todo', 'todosUrl', '$routeParams', '$location', function ($scope, Todo, todosUrl, $routeParams, $location) {
+        $scope.todo = Todo.get({id: $routeParams.todoId});
 
         $scope.saveTodo = function () {
-            $http.put(todosUrl, $scope.todo).success(function (updatedTodo) {
-                console.log("successfully updated todo " + $scope.todo);
-                $location.path("#/todos");
-            });
+            $scope.todo.$update();
+            $location.path("#/todos");
         }
     }])
 
-    .controller('MyPortletController', ['$scope', '$http', 'todosUrl', function ($scope, $http, todosUrl) {
+    .controller('MyPortletController', ['$scope', function ($scope) {
         $scope.message = 'hello Portlet...' + new Date().getMilliseconds();
     }])
 

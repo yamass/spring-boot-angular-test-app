@@ -16,6 +16,7 @@
   "dependencies": {
     "angular":"1.x",
     "angular-route":"1.x",
+    "angular-resource":"1.x",
     "jquery": "latest",
     "bootstrap": "latest",
     "less": "latest",

@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
-@RequestMapping(value = "data/todos")
+@RequestMapping(value = "data/todo")
 public class TodoController {
 
     private final Map<Integer, Todo> todos = Collections.synchronizedMap(new LinkedHashMap<>());
